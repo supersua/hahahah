@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>드라마2</title>
+    <link rel="stylesheet" href="https://s3.ap-northeast-2.amazonaws.com/materials.spartacodingclub.kr/easygpt/default.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+            crossorigin="anonymous"></script>
+            
+            
+
+            <style>
+                /* 섹션들을 가운데로 정렬하기 위한 스타일 */
+                body {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-image: url('https://i.pinimg.com/564x/27/fb/42/27fb4201eb5d9e0f4ec5b5a04dcd9d21.jpg'); /* 사용할 이미지의 경로를 설정하세요 */
+                    background-color: rgba(185, 209, 241, 3); /* 배경색 설정 및 투명도 조절 */
+                }
+        
+                #quizContainer {
+                    text-align: center;
+                }
+        
+                /* 이미지 스타일 (옵션) */
+                #quizImage {
+                    max-width: 100%;
+                }
+
+                #comment {
+    font-size: 26px; /* 원하는 폰트 크기로 수정하세요 */
+    /* 다른 스타일을 적용하려면 여기에 추가하세요 */
+}
+
+            </style>
+</head>
+
+<body>
+    <h1>정답은 띄어쓰기 없이! ٩(๑•̀o•́๑)و </h1>
+    <div id="quizContainer">
+        <img src="" id="quizImage" alt="퀴즈 이미지">
+        <p id="question">질문이 여기에 표시됩니다.</p>
+        <button id="hintButton">힌트 보기</button> <!-- 힌트 버튼 추가 -->
+        <p id="hint" style="display: none;">힌트: 여기에 힌트가 표시됩니다.</p>
+        <input type="text" id="answer" placeholder="정답을 입력하세요">
+        <button id="checkButton">정답 확인</button>
+        <p id="result"></p>
+     
+    </div>
+    <p id="timer">남은 시간: 70초</p>
+    
+
+    <p id="score">맞춘 퀴즈 수: <span id="correctCount">0</span></p>
+
+    
+
+
+
+    <script>
+        // 퀴즈 데이터 (질문, 이미지 URL, 정답 목록, 힌트)
+        const quizData = [
+        {
+                question: "1. 이 드라마의 제목은?",
+                imageUrl: "https://image.news1.kr/system/photos/2020/4/10/4147316/article.jpg/dims/optimize",
+                answers: ["부부의 세계", "부부의세계", "쀼의세계"],
+                hint: "명대사=> 사랑에 빠진게 죄는 아니잖아 "
+            },
+            {
+                question: "2. 이 드라마의 제목은? ",
+                imageUrl: "https://pds.joongang.co.kr/news/component/htmlphoto_mmdata/201901/11/51670089-0440-4075-9747-fb0bb3e993b4.jpg",
+                answers: ["스카이캐슬", "스카이 캐슬", "SKY캐슬"],
+                hint: "명대사=> 어머니, 저를 믿으셔야 합니다. "
+            },
+            {
+                question: "3. 이 드라마의 제목은?",
+                imageUrl: "https://cdn.newscj.com/news/photo/201401/187195_136882_2014.jpg",
+                answers: ["별에서온그대", "별에서 온 그대"],
+                hint: "명대사=> 천송이가 랩을 한다~ 송~송~송  "
+            },
+            {
+                question: "4. 이 드라마의 제목은? (풀네임)",
+                imageUrl: "https://img.etoday.co.kr/pto_db/2021/06/600/20210617160919_1633729_1200_540.jpg",
+                answers: ["슬기로운 의사생활", "슬기로운의사생활"],
+                hint: "ost=> 아로하, lonely night "
+            },
+            {
+                question: "5. 이 드라마의 제목은?",
+                imageUrl: "https://thumbnews.nateimg.co.kr/view610///onimg.nate.com/orgImg/nn/2010/11/19/201011190813031001_1.jpg",
+                answers: ["시크릿 가든", "시크릿가든"],
+                hint: " 명대사=> 길라임씨는 몇살 때부터 그렇게 예뻤나? "
+            },
+            {
+                question: "6. 이 드라마의 제목은?",
+                imageUrl: "https://mblogthumb-phinf.pstatic.net/MjAyMTA1MDhfMTU5/MDAxNjIwNDI0NTkyNzY3.yjG4pd6gbLrh4yIGbHfyIMv-BAfznDqp7acq7YfN7vgg.k3efMLpysTf1yh-k87WqtXYNWbaGqKNKT3sAUiR0EVIg.JPEG.jstiming/output_2673015958.jpg?type=w800",
+                answers: ["추노"],
+                hint: "명대사=> 나의 언년아..나의 사랑아..  "
+            },
+            {
+                question: "7. 이 드라마의 제목은?",
+                imageUrl: "https://m.weekly.cnbnews.com/data/photos/20220728/art_144139_1657500681.jpg",
+                answers: ["이태원클라쓰", "이태원클라스", "이태원 클라쓰", "이태원 클라스"],
+                hint: "인물=> 박새로이 "
+            },
+            {
+                question: "8. 이 드라마의 제목은?",
+                imageUrl: "https://www.hkn24.com/news/photo/200902/22618_10565_65.jpg",
+                answers: ["꽃보다남자", "꽃보다 남자"],
+                hint: "명대사=> 시켜줘, 금잔디 명예소방관   "
+            },
+            {
+                question: "9.이 드라마의 제목은?",
+                imageUrl: "https://revistakoreain.com.br/wp-content/uploads/2022/04/cropped-business-proposal-capa.png",
+                answers: ["사내맞선", "사내 맞선"],
+                hint: "ost=> 사랑인가봐 - 멜로망스"
+            },
+            {
+                question: "10. 이 드라마의 제목은?",
+                imageUrl: "https://t1.daumcdn.net/news/202203/19/entermedia/20220319163843310enti.jpg",
+                answers: ["스물다섯스물하나", "스물다섯 스물하나"],
+                hint: "명대사=> 진짜 하고 싶었던 말을 할게 백이진. "
+            }
+            // 나머지 퀴즈 데이터도 추가
+        ];
+
+        const quizContainer = document.getElementById("quizContainer");
+        const quizImage = document.getElementById("quizImage");
+        const questionElement = document.getElementById("question");
+        const hintElement = document.getElementById("hint");
+        const answerElement = document.getElementById("answer");
+        const resultElement = document.getElementById("result");
+        const scoreElement = document.getElementById("score");
+        const correctCountElement = document.getElementById("correctCount");
+        const checkButton = document.getElementById("checkButton");
+        const hintButton = document.getElementById("hintButton"); // 힌트 버튼 추가
+
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let hintShown = false;
+
+
+        // 퀴즈 초기화 함수
+        function initializeQuiz() {
+            const currentQuiz = quizData[currentQuestionIndex];
+            questionElement.textContent = currentQuiz.question;
+            quizImage.src = currentQuiz.imageUrl;
+            hintElement.textContent = "힌트: " + currentQuiz.hint;
+            resultElement.textContent = "";
+            answerElement.value = "";
+            hintButton.disabled = false; // 힌트 버튼 활성화
+        }
+
+        // 정답 확인 함수
+        function checkAnswer() {
+            const userAnswer = answerElement.value.toLowerCase();
+            const correctAnswers = quizData[currentQuestionIndex].answers.map(answer => answer.toLowerCase());
+
+            if (correctAnswers.includes(userAnswer)) {
+                resultElement.textContent = "정답입니다!";
+                // 맞춘 퀴즈 수 증가
+                correctCount++;
+                // 맞춘 퀴즈 수 업데이트
+                correctCountElement.textContent = correctCount;
+            } else {
+                resultElement.textContent = "틀렸습니다. 정답은 " + correctAnswers.join(" 또는 ") + "입니다.";
+            }
+
+            // 힌트 보기 버튼 클릭 이벤트 처리
+        hintButton.addEventListener("click", () => {
+            hintElement.style.display = "block"; // 힌트 표시
+            hintButton.disabled = true; // 힌트 버튼 비활성화
+            hintShown = true; // 힌트가 표시됨
+        });
+
+            // 현재 퀴즈 인덱스를 증가시켜 다음 퀴즈로 이동
+            currentQuestionIndex++;
+
+            // 힌트를 보여줬던 퀴즈라면 힌트를 초기화
+            if (hintShown) {
+                hintElement.style.display = "none";
+                hintButton.disabled = false;
+                hintShown = false;
+            }
+
+            if (currentQuestionIndex < quizData.length) {
+    initializeQuiz();
+} else {
+    quizContainer.style.display = "none"; // 퀴즈 컨테이너 숨김
+    questionElement.textContent = "퀴즈가 종료되었습니다.";
+    hintElement.style.display = "none";
+    answerElement.style.display = "none";
+    checkButton.style.display = "none";
+    hintButton.style.display = "none";
+
+    // 여기에 마지막 코멘트를 추가합니다.
+    const commentElement = document.getElementById("comment");
+    commentElement.textContent = "퀴즈 완료~! 결과를 안내자에게 보여주세요!";
+}
+
+        }
+        
+
+        // 힌트 버튼 클릭 이벤트 처리
+        hintButton.addEventListener("click", () => {
+            hintElement.style.display = "block"; // 힌트 표시
+            hintButton.disabled = false; // 힌트 버튼 비활성화
+        });
+
+        // 페이지 로드 시 퀴즈 초기화
+        initializeQuiz();
+
+        // 정답 확인 버튼 클릭 이벤트 처리
+        checkButton.addEventListener("click", () => {
+            checkAnswer();
+            moveToNextQuiz();
+        });
+
+        const quizTime = 70; // 시간 제한(초) 설정
+        let timeLeft = quizTime;
+        let timer;
+
+        function updateTimer() {
+            const timerElement = document.getElementById("timer");
+            timerElement.textContent = `남은 시간: ${timeLeft}초`;
+
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                // 시간이 종료되면 다른 페이지로 이동
+                window.location.href = "시간초과.html"; // 이동할 페이지 URL로 변경하세요
+            }
+
+            timeLeft--;
+        }
+
+        function startTimer() {
+            timer = setInterval(updateTimer, 1000);
+        }
+
+        // 페이지 로드 시 시간 제한을 시작
+        window.addEventListener("load", startTimer);
+
+        function hideQuizTitleAndTimer() {
+            const titleElement = document.getElementById("quizTitle");
+            const timerElement = document.getElementById("timer");
+
+            if (titleElement) {
+                titleElement.style.display = "none"; // 제목 숨기기
+            }
+
+            if (timerElement) {
+                timerElement.style.display = "none"; // 시간 숨기기
+            }
+        }
+
+        // 퀴즈 종료 시 호출하는 함수 (예: 버튼 클릭 시 호출)
+        function endQuiz() {
+            hideQuizTitleAndTimer();
+            // 다른 종료 작업을 수행할 수 있습니다.
+        }
+
+
+
+    </script>
+</body>
+</html>
+ 
